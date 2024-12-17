@@ -37,18 +37,25 @@ db.query("SELECT * FROM items", (err, res) => {
 })
 
 
-app.get("/", async (req, res) => {
+app.get("/",  (req, res) => {
   res.render("index.ejs", {
     listTitle: "Today",
     listItems: items,
   });
 });
 
-app.post("/add", (req, res) => {
+
+
+app.post("/add", async (req, res) => {
   const item = req.body.newItem;
-  items.push({ title: item });
+  await db.query(
+    "INSERT INTO items (title) VALUES ($1);",
+    [item]
+  )
   res.redirect("/");
 });
+
+
 
 app.post("/edit", (req, res) => {});
 
