@@ -25,12 +25,19 @@ const db = new pg.Client({
 db.connect()
 
 
-let items = [
-  { id: 1, title: "Buy milk" },
-  { id: 2, title: "Finish homework" },
-];
+let items = [];
 
-app.get("/", (req, res) => {
+db.query("SELECT * FROM items", (err, res) => {
+  if(err){
+    console.error("Error executing query")
+  }else{
+    items = res.rows
+  }
+  db.end
+})
+
+
+app.get("/", async (req, res) => {
   res.render("index.ejs", {
     listTitle: "Today",
     listItems: items,
