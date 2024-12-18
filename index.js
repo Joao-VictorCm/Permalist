@@ -27,32 +27,34 @@ db.connect()
 
 let items = [];
 
-db.query("SELECT * FROM items", (err, res) => {
-  if(err){
-    console.error("Error executing query")
-  }else{
-    items = res.rows
-  }
-  db.end
-})
 
+app.get("/",  async(req, res) => {
+ try {
+  const result = await db.query("SELECT * FROM items")
+  items = result.rows
 
-app.get("/",  (req, res) => {
   res.render("index.ejs", {
     listTitle: "Today",
     listItems: items,
   });
+ } catch (error) {
+  console.log(err);
+ }
 });
 
 
 
 app.post("/add", async (req, res) => {
   const item = req.body.newItem;
-  await db.query(
-    "INSERT INTO items (title) VALUES ($1);",
-    [item]
-  )
-  res.redirect("/");
+  try {
+    await db.query(
+      "INSERT INTO items (title) VALUES ($1);",
+      [item]
+    )
+    res.redirect("/");
+  } catch (error) {
+    console.log(err);
+  }
 });
 
 
@@ -60,27 +62,29 @@ app.post("/add", async (req, res) => {
 app.post("/edit", async (req, res) => {
   const id = req.body.updatedItemId
   const item = req.body.updatedItemTitle
-  console.log(id)
-  console.log(item)
-
-  await db.query(
-    "UPDATE items SET title = ($1) WHERE id = ($2);",
-    [item, id]
-  )
-
-  res.redirect("/")
+  try {
+    await db.query(
+      "UPDATE items SET title = ($1) WHERE id = ($2);",
+      [item, id]
+    )
+    res.redirect("/")
+  } catch (error) {
+    console.log(err);
+  }
 });
 
 app.post("/delete", async (req, res) => {
   const id = req.body.deleteItemId
   console.log(id)
-
-  await db.query(
-    "DELETE FROM items WHERE id = ($1);",
-    [id]
-  )
-
-  res.redirect("/")
+  try {
+    await db.query(
+      "DELETE FROM items WHERE id = ($1);",
+      [id]
+    )
+    res.redirect("/")
+  } catch (error) {
+    console.log(err);
+  }
 });
 
 app.listen(port, () => {
