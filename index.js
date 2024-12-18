@@ -57,7 +57,19 @@ app.post("/add", async (req, res) => {
 
 
 
-app.post("/edit", (req, res) => {});
+app.post("/edit", async (req, res) => {
+  const id = req.body.updatedItemId
+  const item = req.body.updatedItemTitle
+  console.log(id)
+  console.log(item)
+
+  await db.query(
+    "UPDATE items SET title = ($1) WHERE id = ($2);",
+    [item] [id]
+  )
+
+  res.redirect("/")
+});
 
 app.post("/delete", (req, res) => {});
 
